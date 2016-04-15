@@ -2,7 +2,7 @@ using System;
 
 namespace Perceptron
 {
-    class Sample
+    public class Sample
     {
         private int[] data;
         private int ouput;
@@ -15,13 +15,12 @@ namespace Perceptron
 
         public int[] Data
         {
-			get { return Data; }
+			get { return data; }
         }
 
         public int Ouput
         {
-			get { return Ouput; }
+			get { return ouput; }
         }
-
     }
 }
