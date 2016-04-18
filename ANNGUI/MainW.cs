@@ -7,8 +7,9 @@ namespace ANNGUI
 	public class MainW:Form
 	{
 		ComboBox sel;
-		NumericUpDown cN,mV;
-		Label lN, lSel;
+		NumericUpDown cN,mV, umbral, alpha;
+		CheckBox bias;
+		Label lN, lSel, lUmbral, lAlpha;
 		ListView lsW, lsSm;
 		Button bAN,bAS,bEnt,bClear;
 		List<double> ws;
@@ -19,7 +20,7 @@ namespace ANNGUI
 		public MainW ()
 		{
 			Width = 400;
-			Height = 300;
+			Height = 400;
 			Text = "ANN";
 
 			sel = new ComboBox ();
@@ -38,11 +39,43 @@ namespace ANNGUI
 			lSel.Top = sel.Top;
 			lSel.Left = sel.Left + sel.Width + 10;
 
+			umbral = new NumericUpDown ();
+			umbral.DecimalPlaces = 1;
+			umbral.Top = sel.Top + sel.Height + 10;
+			umbral.Left = sel.Left;
+			umbral.Increment = 0.1m;
+			umbral.Value = 0.5m;
+			umbral.Width = 40;
+
+			lUmbral = new Label ();
+			lUmbral.Text = "Umbral";
+			lUmbral.Left = umbral.Left + umbral.Width + 10;
+			lUmbral.Top = umbral.Top;
+
+			alpha = new NumericUpDown ();
+			alpha.DecimalPlaces = 1;
+			alpha.Top = umbral.Top + umbral.Height + 10;
+			alpha.Left = umbral.Left;
+			alpha.Increment = 0.1m;
+			alpha.Value = 0.1m;
+			alpha.Width = umbral.Width;
+
+			lAlpha = new Label ();
+			lAlpha.Text = "Alfa";
+			lAlpha.Top = alpha.Top;
+			lAlpha.Left = alpha.Left + alpha.Width + 10;
+
+			bias = new CheckBox ();
+			bias.Top = alpha.Top + alpha.Height + 10;
+			bias.Left = alpha.Left;
+			bias.Text = "Bias";
+			bias.Checked = true;
+
 			lsW = new ListView ();
 			lsW.Width = sel.Width;
 			lsW.Height = 100;
-			lsW.Top = sel.Top + sel.Height + 10;
-			lsW.Left = sel.Left;
+			lsW.Top = bias.Top + bias.Height + 10;
+			lsW.Left = bias.Left;
 			lsW.View = View.List;
 
 			cN = new NumericUpDown ();
@@ -111,6 +144,7 @@ namespace ANNGUI
 			bEnt.Enabled = false;
 			bEnt.Click += BEnt_Click;
 
+
 			Controls.Add (cN);
 			Controls.Add (lN);
 			Controls.Add (sel);
@@ -122,6 +156,11 @@ namespace ANNGUI
 			Controls.Add (mV);
 			Controls.Add (bEnt);
 			Controls.Add (bClear);
+			Controls.Add (umbral);
+			Controls.Add (alpha);
+			Controls.Add (bias);
+			Controls.Add (lUmbral);
+			Controls.Add (lAlpha);
 
 			els = new List<int> ();
 			ws = new List<double> ();
@@ -172,7 +211,7 @@ namespace ANNGUI
 				for (int i = 0; i != ms.Count; i++) {
 					s [i] = Convert (ms [i]);
 				}
-				var ls = Perceptron.Program.SimplePerceptron (ws.Count, 0.1, true, 0.5, ws.ToArray (), s);
+				var ls = Perceptron.Program.SimplePerceptron (ws.Count, (double)alpha.Value, bias.Checked, (double)umbral.Value, ws.ToArray (), s);
 				var tn = new TrainingResW (ls);
 				tn.Show ();
 			} else {

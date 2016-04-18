@@ -51,7 +51,7 @@ namespace Perceptron
         public static bool StopCondition(List<SampleTraining> lsSample)
         {
 			bool r = lsSample.Count != 0;            
-			for (int i = 1; r && i != 5; i++) {
+			for (int i = 1; r && i != lsSample.Count && i != 5; i++) {
 				r = lsSample [lsSample.Count - i].Error == 0;
 			}
             return r;
