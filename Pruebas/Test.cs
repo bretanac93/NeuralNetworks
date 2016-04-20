@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Perceptron;
 
@@ -7,8 +7,10 @@ namespace Pruebas
 	[TestFixture ()]
 	public class Test
 	{
-		[Test ()]
-		public void TestCase ()
+		double[] weightI;
+		Sample[] samples;
+
+		public Test ()
 		{
 			int[] array1 = new int[3];
 			array1[0] = 1;
@@ -34,18 +36,31 @@ namespace Pruebas
 			array4[2] = 1;
 			Sample s4 = new Sample(array4, 0);
 
-			double[] weightI = new double[3];
+			weightI = new double[3];
 			weightI[0] = 0;
 			weightI[1] = 0;
 			weightI[2] = 0;
 
-			Sample[] samples = new Sample[4];
+			samples = new Sample[4];
 			samples[0] = s1;
 			samples[1] = s2;
 			samples[2] = s3;
 			samples[3] = s4;
+		}
 
-			System.Collections.Generic.List<SampleTraining> a = Program.SimplePerceptron(3, 0.1, true , 0.5, weightI ,samples);
+		[Test ()]
+		public void TestPerceptron ()
+		{			
+			var a = Program.SimplePerceptron(0.1, 0.5, weightI ,samples);
+			for (int i = 0; i != a.Count; i++) {
+				Console.WriteLine (a[i]);
+			}
+			Console.WriteLine("Network training finished");
+		}
+
+		[Test ()]
+		public void TestAdaline (){
+			var a = Program.Adaline (0.1, 0.5, weightI, samples);
 			for (int i = 0; i != a.Count; i++) {
 				Console.WriteLine (a[i]);
 			}

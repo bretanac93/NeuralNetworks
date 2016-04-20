@@ -42,9 +42,5 @@
       <Project>{C7FEE317-E85A-4CE4-BF79-6F2137516DAD}</Project>
       <Name>Perceptron</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Adaline\Adaline.csproj">
-      <Project>{BAC1B6C0-D749-4F5B-96D1-BA85943231D3}</Project>
-      <Name>Adaline</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

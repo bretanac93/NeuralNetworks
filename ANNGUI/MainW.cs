@@ -16,6 +16,7 @@ namespace ANNGUI
 		List<int> els;
 		List<int[]> ms;
 		int elAct;
+		int[] bs;
 
 		public MainW ()
 		{
@@ -44,7 +45,7 @@ namespace ANNGUI
 			umbral.Top = sel.Top + sel.Height + 10;
 			umbral.Left = sel.Left;
 			umbral.Increment = 0.1m;
-			umbral.Value = 0.5m;
+			umbral.Value = 0.0m;
 			umbral.Width = 40;
 
 			lUmbral = new Label ();
@@ -57,7 +58,7 @@ namespace ANNGUI
 			alpha.Top = umbral.Top + umbral.Height + 10;
 			alpha.Left = umbral.Left;
 			alpha.Increment = 0.1m;
-			alpha.Value = 0.1m;
+			alpha.Value = 1.0m;
 			alpha.Width = umbral.Width;
 
 			lAlpha = new Label ();
@@ -70,6 +71,7 @@ namespace ANNGUI
 			bias.Left = alpha.Left;
 			bias.Text = "Bias";
 			bias.Checked = true;
+			bias.CheckedChanged += Bias_CheckedChanged;
 
 			lsW = new ListView ();
 			lsW.Width = sel.Width;
@@ -162,36 +164,45 @@ namespace ANNGUI
 			Controls.Add (lUmbral);
 			Controls.Add (lAlpha);
 
+			bs = new int[]{ -1, 0, 1 };
 			els = new List<int> ();
 			ws = new List<double> ();
 			ms = new List<int[]> ();
-			elAct = 0;
-			els.Add (0);
-			Sel_SelectedIndexChanged (null, null);
+			Limpiar ();
+		}
+
+		void Bias_CheckedChanged (object sender, EventArgs e)
+		{
+			Limpiar ();
 		}
 
 		void BClear_Click (object sender, EventArgs e)
 		{
-			lsW.Items.Clear ();
-			els.Clear ();
-			elAct = 0;
-			els.Add (0);
-			lsSm.Items.Clear ();
-			ms.Clear ();
-			ws.Clear ();
-			bEnt.Enabled = false;
-			bAS.Enabled = false;
-			bClear.Enabled = false;
+			Limpiar ();
 		}
 
-		void Sel_SelectedIndexChanged (object sender, EventArgs e)
-		{
-			SetInitialMV ();
-			lsSm.Clear ();
+		void Limpiar(){
+			lsW.Items.Clear ();
+			els.Clear ();
+			elAct = 1;
+			els.Add (bias.Checked ? 1 : bs[Environment.TickCount%bs.Length]);
+			els.Add (0);
+			lsSm.Items.Clear ();
 			lsSm.Items.Add ("((),)");
 			ActLs ();
 			ms.Clear ();
-			elAct = 0;
+			ws.Clear ();
+			ws.Add (0);
+			bEnt.Enabled = false;
+			bAS.Enabled = false;
+			bClear.Enabled = false;
+			lsSm.Enabled = false;
+			SetInitialMV ();
+		}
+
+		void Sel_SelectedIndexChanged (object sender, EventArgs e)
+		{			
+			Limpiar ();
 		}
 
 		void SetInitialMV(){
@@ -206,18 +217,19 @@ namespace ANNGUI
 
 		void BEnt_Click (object sender, EventArgs e)
 		{
-			if (sel.SelectedIndex == 0) {
-				var s = new Perceptron.Sample[ms.Count];
-				for (int i = 0; i != ms.Count; i++) {
-					s [i] = Convert (ms [i]);
-				}
-				var ls = Perceptron.Program.SimplePerceptron (ws.Count, (double)alpha.Value, bias.Checked, (double)umbral.Value, ws.ToArray (), s);
-				var tn = new TrainingResW (ls);
-				tn.Show ();
-			} else {
-				MessageBox.Show ("Adaline no implementado aún");
+			List<Perceptron.SampleTraining> ls;
+			var s = new Perceptron.Sample[ms.Count];
+			for (int i = 0; i != ms.Count; i++) {
+				s [i] = Convert (ms [i]);
 			}
-		}
+			if (sel.SelectedIndex == 0) {
+				ls = Perceptron.Program.SimplePerceptron ((double)alpha.Value, (double)umbral.Value, ws.ToArray (), s);
+			} else {
+				ls = Perceptron.Program.Adaline ((double)alpha.Value, (double)umbral.Value, ws.ToArray (), s);
+			}
+			var tn = new TrainingResW (ls);
+			tn.Show ();
+		}			
 
 		Perceptron.Sample Convert(int[] s){
 			var r = new int[s.Length - 1];
@@ -232,7 +244,7 @@ namespace ANNGUI
 			elAct++;
 			ActLs ();
 			if (elAct == els.Count) {				
-				elAct = 0;
+				elAct = 1;
 				lsSm.Items.Add ("((), )");
 				ActLs ();
 				bAS.Text = string.Format("Añadir elemento {0}",elAct);
@@ -265,7 +277,7 @@ namespace ANNGUI
 
 		void AnhadirLM(){
 			els.Add (0);
-			elAct = 0;
+			elAct = 1;
 			bAS.Text = string.Format("Añadir elemento {0}",elAct);
 			ActLs ();
 		}
